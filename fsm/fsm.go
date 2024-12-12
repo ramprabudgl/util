@@ -54,24 +54,31 @@ type FSM struct {
 
 // NewFSM create a new FSM object then registers transitions and callbacks to it
 func NewFSM(transitions Transitions, callbacks Callbacks) (*FSM, error) {
+	log.Infof("Hemanth :: NewFSM starts ::")
+	
+	log.Infof("Hemanth :: FSM initialized :11111: transitions: %v, callbacks: %v", transitions, callbacks)
 	fsm := &FSM{
 		transitions: make(map[eventKey]Transition),
 		callbacks:   make(map[StateType]Callback),
 	}
-
+      log.Infof("Hemanth :: FSM initialized : 22222 : transitions: %v, callbacks: %v", fsm.transitions, fsm.callbacks)
 	allStates := make(map[StateType]bool)
-
+        log.Infof("Hemanth :: allStates map initialized :: %v", allStates)
 	for _, transition := range transitions {
 		key := eventKey{
 			Event: transition.Event,
 			From:  transition.From,
 		}
+		log.Infof("Hemanth :: Processing transition :: %v", transition)
+		log.Infof("Hemanth :: Transition key :: %v", key)
 		if _, ok := fsm.transitions[key]; ok {
 			return nil, errors.Errorf("Duplicate transition: %+v", transition)
 		} else {
 			fsm.transitions[key] = transition
 			allStates[transition.From] = true
 			allStates[transition.To] = true
+			log.Infof("Hemanth :: All states updated :: from: %v, to: %v", transition.From, transition.To)
+			log.Infof("Hemanth :: All states updated :: from: %v, to: %v", transition.From, transition.To)
 		}
 	}
 
@@ -82,6 +89,7 @@ func NewFSM(transitions Transitions, callbacks Callbacks) (*FSM, error) {
 			fsm.callbacks[state] = callback
 		}
 	}
+	log.Infof("Hemanth :: NewFSM ends :: FSM created successfully :: fsm ",fsm)
 	return fsm, nil
 }
 
@@ -95,7 +103,7 @@ func (fsm *FSM) SendEvent(state *State, event EventType, args ArgsType, log *log
 		From:  state.Current(),
 		Event: event,
 	}
-
+       log.Infof("Hemanth :: SendEvent :: EventKey :: From: %s, Event: %s\n", key.From, key.Event)
 	if trans, ok := fsm.transitions[key]; ok {
 		callerInfo := ""
 		if argCallerInfo, ok2 := args[ArgCallerInfo]; ok2 {
@@ -107,14 +115,18 @@ func (fsm *FSM) SendEvent(state *State, event EventType, args ArgsType, log *log
 
 		// event callback
 		fsm.callbacks[trans.From](state, event, args)
+		log.Infof("Hemanth ::  event callback :: state : %s, From: %s, To: %s\n",state, trans.From, trans.To)
 
 		// exit callback
 		if trans.From != trans.To {
+			log.Infof("Hemanth :: Exit callback :: state : %s, From: %s, To: %s\n",state, trans.From, trans.To)
 			fsm.callbacks[trans.From](state, ExitEvent, args)
+			
 		}
 
 		// entry callback
 		if trans.From != trans.To {
+			log.Infof("Hemanth :: Entry callback ::  state : %s, From: %s, To: %s\n",state, trans.From, trans.To)
 			state.Set(trans.To)
 			fsm.callbacks[trans.To](state, EntryEvent, args)
 		}
