@@ -115,20 +115,22 @@ func (fsm *FSM) SendEvent(state *State, event EventType, args ArgsType, log *log
 
 		// event callback
 		fsm.callbacks[trans.From](state, event, args)
-		fmt.Printf("Hemanth ::  event callback :: state : %s, From: %s, To: %s\n",state, trans.From, trans.To)
+		fmt.Printf("Hemanth :: Event Callback :: Current State: %v, Transition From: %s, Transition To: %s, Entry Event: %s, Arguments: %v\n", state, trans.From, trans.To, EntryEvent, args)
 
 		// exit callback
 		if trans.From != trans.To {
-			fmt.Printf("Hemanth :: Exit callback :: state : %s, From: %s, To: %s\n",state, trans.From, trans.To)
+			fmt.Printf("Hemanth :: Exit callback : before : Current State: %v, Transition From: %s, Transition To: %s, Entry Event: %s, Arguments: %v\n", state, trans.From, trans.To, EntryEvent, args)
 			fsm.callbacks[trans.From](state, ExitEvent, args)
+	                 fmt.Printf("Hemanth :: Exit callback : after: Current State: %v, Transition From: %s, Transition To: %s, Entry Event: %s, Arguments: %v\n", state, trans.From, trans.To, EntryEvent, args)
 			
 		}
 
 		// entry callback
 		if trans.From != trans.To {
-			fmt.Printf("Hemanth :: Entry callback ::  state : %s, From: %s, To: %s\n",state, trans.From, trans.To)
+			fmt.Printf("Hemanth :: entry callback : before : Current State: %v, Transition From: %s, Transition To: %s, Entry Event: %s, Arguments: %v\n", state, trans.From, trans.To, EntryEvent, args)
 			state.Set(trans.To)
 			fsm.callbacks[trans.To](state, EntryEvent, args)
+			fmt.Printf("Hemanth :: entry callback : after: Current State: %v, Transition From: %s, Transition To: %s, Entry Event: %s, Arguments: %v\n", state, trans.From, trans.To, EntryEvent, args)
 		}
 		return nil
 	} else {
