@@ -54,31 +54,31 @@ type FSM struct {
 
 // NewFSM create a new FSM object then registers transitions and callbacks to it
 func NewFSM(transitions Transitions, callbacks Callbacks) (*FSM, error) {
-	fmt.Fprintf("Hemanth :: NewFSM starts ::")
+	fmt.Printf("Hemanth :: NewFSM starts ::")
 	
-	fmt.Fprintf("Hemanth :: FSM initialized :11111: transitions: %v, callbacks: %v", transitions, callbacks)
+	fmt.Printf("Hemanth :: FSM initialized :11111: transitions: %v, callbacks: %v", transitions, callbacks)
 	fsm := &FSM{
 		transitions: make(map[eventKey]Transition),
 		callbacks:   make(map[StateType]Callback),
 	}
-      fmt.Fprintf("Hemanth :: FSM initialized : 22222 : transitions: %v, callbacks: %v", fsm.transitions, fsm.callbacks)
+      fmt.Printf("Hemanth :: FSM initialized : 22222 : transitions: %v, callbacks: %v", fsm.transitions, fsm.callbacks)
 	allStates := make(map[StateType]bool)
-        fmt.Fprintf("Hemanth :: allStates map initialized :: %v", allStates)
+        fmt.Printf("Hemanth :: allStates map initialized :: %v", allStates)
 	for _, transition := range transitions {
 		key := eventKey{
 			Event: transition.Event,
 			From:  transition.From,
 		}
-		fmt.Fprintf("Hemanth :: Processing transition :: %v", transition)
-		fmt.Fprintf("Hemanth :: Transition key :: %v", key)
+		fmt.Printf("Hemanth :: Processing transition :: %v", transition)
+		fmt.Printf("Hemanth :: Transition key :: %v", key)
 		if _, ok := fsm.transitions[key]; ok {
 			return nil, errors.Errorf("Duplicate transition: %+v", transition)
 		} else {
 			fsm.transitions[key] = transition
 			allStates[transition.From] = true
 			allStates[transition.To] = true
-			fmt.Fprintf("Hemanth :: All states updated :: from: %v, to: %v", transition.From, transition.To)
-			fmt.Fprintf("Hemanth :: All states updated :: from: %v, to: %v", transition.From, transition.To)
+			fmt.Printf("Hemanth :: All states updated :: from: %v, to: %v", transition.From, transition.To)
+			
 		}
 	}
 
@@ -89,7 +89,7 @@ func NewFSM(transitions Transitions, callbacks Callbacks) (*FSM, error) {
 			fsm.callbacks[state] = callback
 		}
 	}
-	fmt.Fprintf("Hemanth :: NewFSM ends :: FSM created successfully :: fsm ",fsm)
+	fmt.Printf("Hemanth :: NewFSM ends :: FSM created successfully :: fsm ",fsm)
 	return fsm, nil
 }
 
@@ -103,7 +103,7 @@ func (fsm *FSM) SendEvent(state *State, event EventType, args ArgsType, log *log
 		From:  state.Current(),
 		Event: event,
 	}
-      fmt.Fprintf("Hemanth :: SendEvent :: EventKey :: From: %s, Event: %s\n", key.From, key.Event)
+      fmt.Printf("Hemanth :: SendEvent :: EventKey :: From: %s, Event: %s\n", key.From, key.Event)
 	if trans, ok := fsm.transitions[key]; ok {
 		callerInfo := ""
 		if argCallerInfo, ok2 := args[ArgCallerInfo]; ok2 {
@@ -115,18 +115,18 @@ func (fsm *FSM) SendEvent(state *State, event EventType, args ArgsType, log *log
 
 		// event callback
 		fsm.callbacks[trans.From](state, event, args)
-		fmt.Fprintf("Hemanth ::  event callback :: state : %s, From: %s, To: %s\n",state, trans.From, trans.To)
+		fmt.Printf("Hemanth ::  event callback :: state : %s, From: %s, To: %s\n",state, trans.From, trans.To)
 
 		// exit callback
 		if trans.From != trans.To {
-			fmt.Fprintf("Hemanth :: Exit callback :: state : %s, From: %s, To: %s\n",state, trans.From, trans.To)
+			fmt.Printf("Hemanth :: Exit callback :: state : %s, From: %s, To: %s\n",state, trans.From, trans.To)
 			fsm.callbacks[trans.From](state, ExitEvent, args)
 			
 		}
 
 		// entry callback
 		if trans.From != trans.To {
-			fmt.Fprintf("Hemanth :: Entry callback ::  state : %s, From: %s, To: %s\n",state, trans.From, trans.To)
+			fmt.Printf("Hemanth :: Entry callback ::  state : %s, From: %s, To: %s\n",state, trans.From, trans.To)
 			state.Set(trans.To)
 			fsm.callbacks[trans.To](state, EntryEvent, args)
 		}
