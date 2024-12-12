@@ -1,4 +1,4 @@
-module github.com/free5gc/util
+module github.com/ramprabudgl/util
 
 go 1.21
 
