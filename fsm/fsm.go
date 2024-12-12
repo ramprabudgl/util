@@ -103,6 +103,8 @@ func (fsm *FSM) SendEvent(state *State, event EventType, args ArgsType, log *log
 		From:  state.Current(),
 		Event: event,
 	}
+      fmt.Printf("Hemanth :: SendEvent : calling  :  State: %v, Event: %s, Arguments: %v\n", state, event, args)
+      fmt.Printf("****************************************************************************")
       fmt.Printf("Hemanth :: SendEvent :: EventKey :: From: %s, Event: %s\n", key.From, key.Event)
 	if trans, ok := fsm.transitions[key]; ok {
 		callerInfo := ""
